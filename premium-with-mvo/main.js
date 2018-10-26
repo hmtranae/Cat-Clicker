@@ -18,36 +18,127 @@ preload(
 
 // Change everything into array of objects
 // Model is the array of objects named cats
-let cats = [
-    {name: 'Mustache', count: 0, imgUrl: 'https://image.shutterstock.com/image-photo/cute-cat-lying-on-his-260nw-572338033.jpg', imgAlt: 'Cat staring at camera on its back'}, 
-    {name: 'Presto', count: 0, imgUrl: 'https://cdn.pixabay.com/photo/2018/03/27/17/25/cat-3266673__340.jpg', imgAlt: 'Orange cat looking off in the distance'}, 
-    {name: 'Garfield', count: 0, imgUrl: 'https://www.sonomamag.com/wp-content/uploads/2018/05/shutterstock_352176329.jpg', imgAlt: 'Black and white striped cat looking all purrrdy'}, 
-    {name: 'Larry', count: 0, imgUrl: 'http://www.catbreedslist.com/cat-wallpapers/Kitten-cute-lying-claws-900x506.jpg', imgAlt: "Cat pawing its face - maybe it's asking you for a scratch!"}, 
-    {name: 'Bobby', count: 0, imgUrl: 'https://stylearena.net/wp-content/uploads/2015/04/cute-cat-in-jeans.jpg', imgAlt: 'Cat hiding in the pant leg of a pair of jeans'}
-];
+let model = {
 
-// View
-// Loop through every cat within cats
-function initCats(cats) {
-    cats.forEach(function(cat, index) {
-        // Print the cat's name in the first column
-        let catName = cat.name;
-        let elem = document.createElement('div')
-        elem.textContent = catName;
-        
-        // Listen to which cat name was clicked
-        elem.addEventListener('click', (e) => {
-            cats[index].count++;
-            // Display picture of cat underneath
-            $('img').attr('src', cats[index].imgUrl);
-            $('img').attr('alt', cats[index].imgAlt);
-            $('#display-cat-name').text(cats[index].name);
-            $('#cat-count').text(`Clicks: ${cats[index].count}`);
-        })
-
-        document.body.querySelector('#cat-name-list').appendChild(elem).classList.add('cat-name-list');
-    })
-}
+    currentCat: null,
+    cats: [
+        {
+            name: 'Mustache', 
+            count: 0, 
+            imgUrl: 'https://image.shutterstock.com/image-photo/cute-cat-lying-on-his-260nw-572338033.jpg', 
+            imgAlt: 'Cat staring at camera on its back'
+        }, 
+        {
+            name: 'Presto', 
+            count: 0, 
+            imgUrl: 'https://cdn.pixabay.com/photo/2018/03/27/17/25/cat-3266673__340.jpg', 
+            imgAlt: 'Orange cat looking off in the distance'
+        }, 
+        {
+            name: 'Garfield', 
+            count: 0, 
+            imgUrl: 'https://www.sonomamag.com/wp-content/uploads/2018/05/shutterstock_352176329.jpg', 
+            imgAlt: 'Black and white striped cat looking all purrrdy'
+        }, 
+        {
+            name: 'Larry', 
+            count: 0, 
+            imgUrl: 'http://www.catbreedslist.com/cat-wallpapers/Kitten-cute-lying-claws-900x506.jpg', 
+            imgAlt: "Cat pawing its face - maybe it's asking you for a scratch!"
+        }, 
+        {
+            name: 'Bobby', 
+            count: 0, 
+            imgUrl: 'https://stylearena.net/wp-content/uploads/2015/04/cute-cat-in-jeans.jpg', 
+            imgAlt: 'Cat hiding in the pant leg of a pair of jeans'
+        }
+    ]
+};
 
 // Octopus
-initCats(cats)
+
+let octopus = {
+
+    init: function() {
+        // set our current cat to the first one in the list
+        model.currentCat = model.cats[0];
+
+        // tell our views to initialize
+        catListView.init();
+        catView.init();
+    },
+
+    getCurrentCat: function() {
+        return model.currentCat;
+    },
+    
+    getCats: function() {
+        return model.cats;
+    },
+
+    // set the currently-selected cat to the object passed in
+    setCurrentCat: function(cat) {
+        model.currentCat = cat;
+    },
+
+    // increments the counter for the currently-selected cat
+    incrementCounter: function() {
+        model.currentCat.count++;
+        catView.render();
+    }
+};
+
+let catView = {
+    
+    init: function() {
+        this.catElem = document.getElementById('cat');
+        this.catNameElem = document.getElementById('cat-name');
+        this.catImageElem = document.getElementById('cat-img');
+        this.countElem = document.getElementById('cat-count');
+
+        // on click, increment the current cat's counter
+        this.catImageElem.addEventListener('click', function() {
+            octopus.incrementCounter();
+        });
+
+        // render this view (update the DOM elements with the right values)
+        this.render();
+    },
+
+    render: function() {
+        let currentCat = octopus.getCurrentCat();
+        this.countElem.textContent = currentCat.count;
+        this.catNameElem.textContent = currentCat.name;
+        this.catImageElem.src = currentCat.imgUrl;
+        this.catImageElem.alt = currentCat.imgAlt;
+    }
+};
+
+let catListView =  {
+     
+    init: function() {
+        this.catListElem = document.getElementById('cat-list');
+
+        this.render();
+    },
+
+    render: function() {
+        var cats = octopus.getCats();
+        this.catListElem.innerHTML = '';
+        for (let i = 0; i < cats.length; i++) {
+            var cat = cats[i];
+            var elem = document.createElement('li');
+            elem.textContent = cat.name;
+            elem.addEventListener('click', (function(catCopy) {
+                return function() {
+                    octopus.setCurrentCat(catCopy);
+                    catView.render();
+                };
+            })(cat));
+
+            this.catListElem.appendChild(elem);
+        };
+    }
+};
+
+octopus.init();
