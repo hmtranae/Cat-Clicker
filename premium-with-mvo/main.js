@@ -60,12 +60,13 @@ let model = {
 let octopus = {
 
     init: function() {
-        // set our current cat to the first one in the list
         model.currentCat = model.cats[0];
 
         // tell our views to initialize
         catListView.init();
         catView.init();
+        catView.hideAdmin();
+        catView.listenForm();
     },
 
     getCurrentCat: function() {
@@ -85,16 +86,27 @@ let octopus = {
     incrementCounter: function() {
         model.currentCat.count++;
         catView.render();
+    },
+
+    changeCat: function(oldName, newCat) {
+        for (let i = 0; i < model.cats.length; i++) {
+            if (model.cats[i].name === oldName) {
+                model.cats[i] = newCat;
+                catView.render();
+            }
+        }
     }
 };
 
 let catView = {
-    
+
     init: function() {
         this.catElem = document.getElementById('cat');
         this.catNameElem = document.getElementById('cat-name');
         this.catImageElem = document.getElementById('cat-img');
         this.countElem = document.getElementById('cat-count');
+        this.admin =  document.querySelector('#admin');
+        this.display = document.querySelector('#cat-img');    
 
         // on click, increment the current cat's counter
         this.catImageElem.addEventListener('click', function() {
@@ -103,6 +115,52 @@ let catView = {
 
         // render this view (update the DOM elements with the right values)
         this.render();
+    },
+
+    listenForm: function() {
+        document
+            .querySelector('#form')
+            .addEventListener('submit', this.onSubmit);
+    },
+
+    nameChange: function(name) {
+        this.catNameElem = name;
+    },
+
+    imageChange: function(source) {
+        this.catImageElem = source;
+    },
+
+    clicksChange: function(clicks) {
+        this.countElem = clicks;
+    },
+
+    onSubmit: function(e) {
+        e.preventDefault();
+        const newCat = {
+            name: catView.catNameElem,
+            image: catView.catImageElem,
+            clicks: catView.countElem
+        };
+        const oldName = octopus.getCurrentCat().name;
+        octopus.changeCat(oldName, newCat);
+        catView.render();
+        catListView.render();
+        catView.clearForm();
+    },
+
+    clearForm: function() {
+        this.catNameElem = '';
+        this.catImageElem = '';
+        this.countElem = 0;
+    },
+
+    showAdmin: function() {
+        this.admin.style.display = 'block';
+    },
+
+    hideAdmin: function() {
+        this.admin.style.display = 'none';
     },
 
     render: function() {

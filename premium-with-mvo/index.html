@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="float-grid.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <title>Cat Clicker</title>
 </head>
@@ -16,7 +18,7 @@
         <h1>Cat Clicker</h1>
     </header>
 
-    <main role='main'>
+    <main role='main' class='container-fluid'>
 
         <div class="row">
             <div class="col-3">
@@ -24,14 +26,33 @@
                     <div id='cat'>
                         <h2 id='cat-name'></h2>
                     </div>
-                </div>>
+            </div>
             </div>
             <div class="col-4">
                 <h4 id='display-cat-name'></h4>
                 <img id='cat-img' src='' alt=''>
                 <h4 id='cat-count'></h4>
             </div>
-            <div id='click-direction'>Please Click on your Desired Cat</div>
+            <button onclick='catView.showAdmin()' class='btn btn-primary'>Admin</button>
+            <div id="admin">
+                <h1>Edit Cat</h1>
+                <form id="form">
+                    <div class="form-group">
+                        <label for='name'>Cat Name</label>
+                        <input onkeyup='catView.nameChange(this.value)' id='name' type='text' class='form-control' placeholder='Enter Cat name'>
+                    </div>
+                    <div class="form-group">
+                        <label for='image'>Cat Image Source</label>
+                        <input onkeyup='catView.imageChange(this.value)' id='image' type='text' class='form-control' placeholder='https://...'>
+                    </div>
+                    <div class="form-group">
+                        <label for='clicks'>Number of Clicks</label>
+                        <input onkeyup='catView.clicksChange(this.value)' id='clicks' type='text' class='form-control' placeholder='# of clicks...'>
+                    </div>
+                    <button class="btn btn-success" type='submit'>Submit</button>
+                    <button onclick='catView.hideAdmin()' class='btn btn-danger' type='button'>Cancel</button>
+                </form>
+            </div>
         </div>
 
     </main>
